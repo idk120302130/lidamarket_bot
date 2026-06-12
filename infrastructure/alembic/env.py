@@ -17,8 +17,12 @@ if config.config_file_name is not None:
 from infrastructure.database.models import Base
 target_metadata = Base.metadata
 
+# Берём ссылку на базу данных от Railway
 url = os.getenv("DATABASE_URL")
 if url:
+    # Если ссылка начинается на postgresql://, автоматически меняем на асинхронную postgresql+asyncpg://
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
     config.set_main_option("sqlalchemy.url", url)
 
 def run_migrations_offline() -> None:
